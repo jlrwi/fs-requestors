@@ -1,0 +1,15 @@
+{
+  "name": "@jlrwi/fs_requestors",
+  "version": "1.0.0",
+  "main": "fs_requestors.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jonathan Reimer",
+  "license": "ISC",
+  "description": "Parseq-style requestors for Node fs methods",
+  "dependencies": {
+    "@jlrwi/esfunctions": "*"
+  },
+  "type": "module"
+}
