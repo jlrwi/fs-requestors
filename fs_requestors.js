@@ -4,6 +4,7 @@
 
 import {
     appendFile,
+    readdir,
     readFile,
     unlink,
     writeFile
@@ -41,12 +42,32 @@ const append_file = function (options) {
     };
 };
 
+const read_directory = function (options) {
+    return function (callback) {
+
+        const node_callback = function (err, files) {
+            return (
+                err
+                ? callback (undefined, err.message)
+                : callback (files)
+            );
+        };
+
+        return function (path) {
+            if (is_object (options)) {
+                readdir(path, options, node_callback);
+            } else {
+                readdir(path, node_callback);
+            }
+        };
+    };
+};
+
 const read_file = function (options) {
     return function (callback) {
 
         if (!object_has_property ("encoding") (options)) {
             return callback (undefined, "Invalid encoding");
-
         }
 
         const options_param = (
@@ -88,7 +109,7 @@ const write_file = function (options) {
                 return (
                     err
                     ? callback (undefined, err.message)
-                    : callback (true)
+                    : callback (path)
                 );
             };
 
@@ -110,6 +131,7 @@ const write_file = function (options) {
 
 export {
     append_file,
+    read_directory,
     read_file,
     unlink_file,
     write_file
