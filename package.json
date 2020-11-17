@@ -8,8 +8,5 @@
   "author": "Jonathan Reimer",
   "license": "ISC",
   "description": "Parseq-style requestors for Node fs methods",
-  "dependencies": {
-    "@jlrwi/esfunctions": "*"
-  },
   "type": "module"
 }

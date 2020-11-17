@@ -9,14 +9,10 @@ import {
     unlink,
     writeFile
 } from "fs";
-import {
-    object_has_property,
-    is_object
-} from "@jlrwi/esfunctions";
 
 const append_file = function (options) {
     return function (path) {
-        return function (callback) {
+        return function append_file_requestor (callback) {
 
             const node_callback = function (err) {
                 return (
@@ -27,15 +23,14 @@ const append_file = function (options) {
             };
 
             return function (data) {
-                if (is_object (options)) {
-                    const options_param = (
-                        object_has_property ("flag") (options)
-                        ? options
-                        : options.encoding
-                    );
-                    appendFile(path, data, options_param, node_callback);
-                } else {
-                    appendFile(path, data, node_callback);
+                try {
+                    if (options === undefined) {
+                        appendFile(path, data, node_callback);
+                    } else {
+                        appendFile(path, data, options, node_callback);
+                    }
+                } catch (exception) {
+                    callback (undefined, exception.message);
                 }
             };
         };
@@ -43,7 +38,7 @@ const append_file = function (options) {
 };
 
 const read_directory = function (options) {
-    return function (callback) {
+    return function read_directory_requestor (callback) {
 
         const node_callback = function (err, files) {
             return (
@@ -54,56 +49,66 @@ const read_directory = function (options) {
         };
 
         return function (path) {
-            if (is_object (options)) {
-                readdir(path, options, node_callback);
-            } else {
-                readdir(path, node_callback);
+            try {
+                if (options === undefined) {
+                    readdir(path, node_callback);
+                } else {
+                    readdir(path, options, node_callback);
+                }
+            } catch (exception) {
+                callback (undefined, exception.message);
             }
         };
     };
 };
 
 const read_file = function (options) {
-    return function (callback) {
+    return function read_file_requestor (callback) {
 
-        if (!object_has_property ("encoding") (options)) {
-            return callback (undefined, "Invalid encoding");
-        }
-
-        const options_param = (
-            object_has_property ("flag") (options)
-            ? options
-            : options.encoding
-        );
-
+        const node_callback = function (err, data) {
+            return (
+                err
+                ? callback (undefined, err.message)
+                : callback (data)
+            );
+        };
 
         return function (path) {
-            readFile(path, options_param, function (err, source) {
-                return (
-                    err
-                    ? callback (undefined, err.message)
-                    : callback (source)
-                );
-            });
+            try {
+                if (options === undefined) {
+                    readFile(path, node_callback);
+                } else {
+                    readFile(path, options, node_callback);
+                }
+            } catch (exception) {
+                callback (undefined, exception.message);
+            }
         };
     };
 };
 
-const unlink_file = function (callback) {
+const unlink_file = function unlink_file_requestor (callback) {
     return function (path) {
-        unlink(path, function (err) {
+
+        const node_callback = function (err) {
             return (
                 err
                 ? callback (undefined, err.message)
                 : callback (true)
             );
-        });
+        };
+
+        try {
+            unlink(path, node_callback);
+        } catch (exception) {
+            callback (undefined, exception.message);
+        }
     };
 };
 
 const write_file = function (options) {
     return function (path) {
-        return function (callback) {
+        return function write_file_requestor (callback) {
 
             const node_callback = function (err) {
                 return (
@@ -114,15 +119,14 @@ const write_file = function (options) {
             };
 
             return function (data) {
-                if (is_object (options)) {
-                    const options_param = (
-                        object_has_property ("flag") (options)
-                        ? options
-                        : options.encoding
-                    );
-                    writeFile(path, data, options_param, node_callback);
-                } else {
-                    writeFile(path, data, node_callback);
+                try {
+                    if (options === undefined) {
+                        writeFile(path, data, node_callback);
+                    } else {
+                        writeFile(path, data, options, node_callback);
+                    }
+                } catch (exception) {
+                    callback (undefined, exception.message);
                 }
             };
         };
