@@ -4,6 +4,9 @@
 
 import {
     appendFile,
+    close,
+    open,
+    read,
     readdir,
     readFile,
     unlink,
@@ -34,6 +37,95 @@ const append_file = function (options) {
                 }
             };
         };
+    };
+};
+
+const close_file = function (callback) {
+    return function (fd) {
+
+        const node_callback = function (err) {
+            return (
+                err
+                ? callback(undefined, err.message)
+                : callback(fd)
+            );
+        };
+
+        try {
+            close(fd, node_callback);
+        } catch (exception) {
+            callback(undefined, exception.message);
+        }
+    };
+};
+
+const open_file = function (options = {}) {
+    return function open_requestor (callback) {
+        return function (path) {
+            let args = [path];
+
+            const node_callback = function (err, fd) {
+                return (
+                    err
+                    ? callback(undefined, err)
+                    : callback(fd)
+                );
+            };
+
+            if (options.flags !== undefined) {
+                args.push(options.flags);
+            }
+
+            if (options.mode !== undefined) {
+                args.push(options.mode);
+            }
+
+            args.push(node_callback);
+
+            try {
+                open(...args);
+            } catch (exception) {
+                callback(undefined, exception.message);
+            }
+        };
+    };
+};
+
+// options: buffer, offset, length, position
+const read_from_file = function (callback) {
+//  jslint doesn't like ({fd, ...options}) {
+    return function ({fd, buffer, offset, length, position}) {
+
+        if ((
+            buffer === undefined
+        ) && (
+            offset === undefined
+        ) && (
+            length !== undefined
+        )) {
+            offset = 0;
+            buffer = Buffer.alloc(length);
+        }
+
+        const node_callback = function (err, bytes_read, buffer) {
+            return (
+                err
+                ? callback(undefined, err.message)
+                : callback({
+                    fd,
+                    bytes_read,
+                    buffer,
+                    offset,
+                    position
+                })
+            );
+        };
+
+        try {
+            read(fd, {buffer, offset, length, position}, node_callback);
+        } catch (exception) {
+            callback(undefined, exception.message);
+        }
     };
 };
 
@@ -135,6 +227,9 @@ const write_file = function (options) {
 
 export {
     append_file,
+    close_file,
+    open_file,
+    read_from_file,
     read_directory,
     read_file,
     unlink_file,
