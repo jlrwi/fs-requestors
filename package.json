@@ -1,12 +1,16 @@
 {
-  "name": "@jlrwi/fs_requestors",
-  "version": "1.1.0",
-  "main": "fs_requestors.js",
+  "name": "@jlrwi/fs-requestors",
+  "version": "2.0.0",
+  "main": "index.js",
+  "files": [
+    "/src"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "stage": "extract-doc ./src/fs_requestors.js README.md & extract-min ./src/fs_requestors.js index.js"
   },
   "author": "Jonathan Reimer",
   "license": "ISC",
-  "description": "Parseq-style requestors for Node fs methods",
+  "description": "Curried-parseq-style requestors for Node fs methods",
   "type": "module"
 }

@@ -15,13 +15,13 @@ import {
 
 const append_file = function (options) {
     return function (path) {
-        return function append_file_requestor (callback) {
+        return function append_file_requestor(callback) {
 
             const node_callback = function (err) {
                 return (
                     err
-                    ? callback (undefined, err.message)
-                    : callback (true)
+                    ? callback(undefined, err.message)
+                    : callback(true)
                 );
             };
 
@@ -33,7 +33,7 @@ const append_file = function (options) {
                         appendFile(path, data, options, node_callback);
                     }
                 } catch (exception) {
-                    callback (undefined, exception.message);
+                    callback(undefined, exception.message);
                 }
             };
         };
@@ -60,7 +60,7 @@ const close_file = function (callback) {
 };
 
 const open_file = function (options = {}) {
-    return function open_requestor (callback) {
+    return function open_requestor(callback) {
         return function (path) {
             let args = [path];
 
@@ -91,52 +91,53 @@ const open_file = function (options = {}) {
     };
 };
 
-// options: buffer, offset, length, position
-const read_from_file = function (callback) {
-//  jslint doesn't like ({fd, ...options}) {
-    return function ({fd, buffer, offset, length, position}) {
+const read_from_file = function ({buffer, offset, length, position}) {
+    return function (callback) {
+        return function (fd) {
 
-        if ((
-            buffer === undefined
-        ) && (
-            offset === undefined
-        ) && (
-            length !== undefined
-        )) {
-            offset = 0;
-            buffer = Buffer.alloc(length);
-        }
+// Create a buffer of appropriate size if none passed in
+            if ((
+                buffer === undefined
+            ) && (
+                offset === undefined
+            ) && (
+                length !== undefined
+            )) {
+                offset = 0;
+                buffer = Buffer.alloc(length);
+            }
 
-        const node_callback = function (err, bytes_read, buffer) {
-            return (
-                err
-                ? callback(undefined, err.message)
-                : callback({
-                    fd,
-                    bytes_read,
-                    buffer,
-                    offset,
-                    position
-                })
-            );
+            const node_callback = function (err, bytes_read, buffer) {
+                return (
+                    err
+                    ? callback(undefined, err.message)
+                    : callback({
+                        fd,
+                        bytes_read,
+                        buffer,
+                        offset,
+                        position
+                    })
+                );
+            };
+
+            try {
+                read(fd, {buffer, offset, length, position}, node_callback);
+            } catch (exception) {
+                callback(undefined, exception.message);
+            }
         };
-
-        try {
-            read(fd, {buffer, offset, length, position}, node_callback);
-        } catch (exception) {
-            callback(undefined, exception.message);
-        }
     };
 };
 
 const read_directory = function (options) {
-    return function read_directory_requestor (callback) {
+    return function read_directory_requestor(callback) {
 
         const node_callback = function (err, files) {
             return (
                 err
-                ? callback (undefined, err.message)
-                : callback (files)
+                ? callback(undefined, err.message)
+                : callback(files)
             );
         };
 
@@ -148,20 +149,20 @@ const read_directory = function (options) {
                     readdir(path, options, node_callback);
                 }
             } catch (exception) {
-                callback (undefined, exception.message);
+                callback(undefined, exception.message);
             }
         };
     };
 };
 
 const read_file = function (options) {
-    return function read_file_requestor (callback) {
+    return function read_file_requestor(callback) {
 
         const node_callback = function (err, data) {
             return (
                 err
-                ? callback (undefined, err.message)
-                : callback (data)
+                ? callback(undefined, err.message)
+                : callback(data)
             );
         };
 
@@ -173,40 +174,40 @@ const read_file = function (options) {
                     readFile(path, options, node_callback);
                 }
             } catch (exception) {
-                callback (undefined, exception.message);
+                callback(undefined, exception.message);
             }
         };
     };
 };
 
-const unlink_file = function unlink_file_requestor (callback) {
+const unlink_file = function unlink_file_requestor(callback) {
     return function (path) {
 
         const node_callback = function (err) {
             return (
                 err
-                ? callback (undefined, err.message)
-                : callback (true)
+                ? callback(undefined, err.message)
+                : callback(true)
             );
         };
 
         try {
             unlink(path, node_callback);
         } catch (exception) {
-            callback (undefined, exception.message);
+            callback(undefined, exception.message);
         }
     };
 };
 
 const write_file = function (options) {
     return function (path) {
-        return function write_file_requestor (callback) {
+        return function write_file_requestor(callback) {
 
             const node_callback = function (err) {
                 return (
                     err
-                    ? callback (undefined, err.message)
-                    : callback (path)
+                    ? callback(undefined, err.message)
+                    : callback(path)
                 );
             };
 
@@ -218,7 +219,7 @@ const write_file = function (options) {
                         writeFile(path, data, options, node_callback);
                     }
                 } catch (exception) {
-                    callback (undefined, exception.message);
+                    callback(undefined, exception.message);
                 }
             };
         };
