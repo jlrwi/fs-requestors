@@ -5,6 +5,7 @@
 import {
     appendFile,
     close,
+    mkdir,
     open,
     read,
     readdir,
@@ -56,6 +57,33 @@ const close_file = function (callback) {
         } catch (exception) {
             callback(undefined, exception.message);
         }
+    };
+};
+
+// Options can be either number (mode) or object
+const make_directory = function (options) {
+    return function mkdir_requestor(callback) {
+        return function (path) {
+
+// callback also receives first path created, if any
+            const node_callback = function (err) {
+                if (err) {
+                    callback(undefined, err.message);
+                } else {
+                    callback(path);
+                }
+            };
+
+            try {
+                if (options === undefined) {
+                    mkdir(path, node_callback);
+                } else {
+                    readdir(path, options, node_callback);
+                }
+            } catch (exception) {
+                callback(undefined, exception.message);
+            }
+        };
     };
 };
 
@@ -229,6 +257,7 @@ const write_file = function (options) {
 export {
     append_file,
     close_file,
+    make_directory,
     open_file,
     read_from_file,
     read_directory,
